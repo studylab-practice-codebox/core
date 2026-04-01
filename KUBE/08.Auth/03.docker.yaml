@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secret-docker
+  labels:
+    app: secret-docker
+spec:
+  replicas: 1 # 동시에 실행할 POD 수량
+  selector:
+    matchLabels:
+      app: secret-docker
+  template:
+    metadata:
+      labels: # 해당 POD의 구분자 설정
+        app: secret-docker
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest # docker-repository(https://hub.docker.com/ 에서 검색)에 있는 이미지 경로 입력
+        ports:
+        - containerPort: 80 # POD가 실행할 서비스 포트 번호
+      imagePullSecrets:
+      - name: secret-docker # 사전에 생성한 secret 입력

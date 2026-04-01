@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goproxy
+  labels:
+    app: goproxy
+spec:
+  containers:
+  - name: goproxy
+    image: registry.k8s.io/goproxy:0.1
+    ports: # 서비스 Port 지정
+    - containerPort: 8080
+    readinessProbe:
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 15 # 첫 번째 Probe 수행 전 15초간 대기
+      periodSeconds: 10 # initialDelaySeconds 시간이 지나면 10초마다 Probe를 수행하고 명령이 성공하면 '0'으로 값을 반환
+    livenessProbe:
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 15 # 첫 번째 Probe 수행 전 15초간 대기
+      periodSeconds: 10 # initialDelaySeconds 시간이 지나면 10초마다 Probe를 수행하고 명령이 성공하면 '0'으로 값을 반환

@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-affinity
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution: # 노드 스케쥴링 시 필수 조건(예 : 특정 레이블에만 Pod 할당)인 경우
+        nodeSelectorTerms:  # require 방식은 노드 스케쥴링의 필수 조건으로 동작
+        - matchExpressions: # Label, key, values 지정
+          - key: disktype # Label 이름 지정(예 : disk 방식)
+            operator: In  # Label의 key와 values의 비교 조건
+            values:
+            - ssd # 값이 ssd 인지 검사(조건 : operator)
+      preferredDuringSchedulingIgnoredDuringExecution:  # 노드 스케쥴링 시 선택 조건(우선해서 선정한다는 것으로 require 방식과 달리 필수 조건은 아님)
+      - weight: 1 # 가중치
+        preference: # require 방식에서의 'nodeSelectorTerms' 필드
+          matchExpressions: # Label, key, values 지정
+          - key: disktype # Label 이름 지정(예 : disk 방식)
+            operator: Exists  # Label의 key와 values의 비교 조건(values[] 불필요)
+          - key: core # Label 이름 지정(예 : CPU)
+            operator: Gt  # Label의 key와 values의 비교 조건 (Labels > values)
+            values:
+            - "6" # 값이 6 인지 검사(조건 : operator)
+          - key: memory # Label 이름 지정
+            operator: Lt  # Label의 key와 values의 비교 조건 (Labels < values)
+            values:
+            - "4" # 값이 "4" 인지 검사(조건 : operator)
+  containers:
+  - name: nginx
+    image: nginx
+    imagePullPolicy: IfNotPresent

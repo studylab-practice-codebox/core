@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    test: liveness
+  name: liveness-http
+spec:
+  containers:
+  - name: liveness
+    image: registry.k8s.io/liveness
+    args: # /server 마운트
+    - /server
+    livenessProbe:
+      httpGet: # 서비스 경로 지정
+        path: /healthz
+        port: 8080
+        httpHeaders:
+        - name: Custom-Header
+          value: Awesome # 처음 10초간 200을 반환 하다가 500을 반환하는 코드
+      initialDelaySeconds: 3 # 첫 번째 Probe 수행 전 3초간 대기
+      periodSeconds: 3 # initialDelaySeconds 시간이 지나면 3초마다 Probe를 수행하고 명령이 성공하면 '0'으로 값을 반환
+
+# 원본 코드 구성 요약
+# http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+#     duration := time.Now().Sub(started)
+#     if duration.Seconds() > 10 {  # 10초 기준
+#         w.WriteHeader(500)  # 10초 후에는 상태코드 500 반환
+#         w.Write([]byte(fmt.Sprintf("error: %v", duration.Seconds())))
+#     } else {
+#         w.WriteHeader(200)  # 10초 전에는 상태코드 200 반환
+#         w.Write([]byte("ok"))
+#     }
+# })

@@ -1,0 +1,47 @@
+# PV 지정
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-hostpath-volume  # PV 이름
+spec:
+  capacity:
+    storage: 2Gi  # PV 용량 지정(이진법 접두어 방식)
+  volumeMode: Filesystem  # Volume을 FileSystem 형식으로 지정
+  accessModes:  # Volume의 읽기/쓰기 모드 지정
+    - ReadWriteOnce # 노드 1대에만 Volume의 읽기/쓰기 가능
+  persistentVolumeReclaimPolicy: Delete # PV 해제 시 초기화 옵션
+  storageClassName: nginx  # Storage Class가 있는 PV는 해당 Storate Class에 맞는 PVC만 연결
+  hostPath: # PV의 Volume Plugin (예시 : hostPath)
+    path: /tmp  # Mount를 수행할 로컬 서버 경로
+---
+# PVC 지정
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-hostpatch-volume  # PVC 이름
+spec:
+  accessModes:  # Volume의 읽기/쓰기 모드 지정
+  - ReadWriteOnce # 노드 1대에만 Volume의 읽기/쓰기 가능
+  volumeMode: Filesystem  # Volume을 FileSystem 형식으로 지정
+  resources:
+    requests:
+      storage: 1Gi  # PVC 용량 지정(PV의 전체 용량 보다 작아야 함)
+  storageClassName: nginx  # Storage Class가 있는 PV는 해당 Storate Class에 맞는 PVC만 연결
+---
+# Pod 지정
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-hostpath-volume # Pod 이름
+spec:
+  containers:
+    - name: nginx-pod # Container 이름
+      image: nginx  # Container 에서 사용할 image
+      volumeMounts:
+      - mountPath: "/var/www/html"  # Container에 Mount할 경로 (PV → Container)
+        name: mypd  # Container에 표시할 volume 이름
+  volumes:
+    - name: mypd  # Volume 이름
+      persistentVolumeClaim:
+        claimName: pvc-hostpatch-volume  # 연동할 PVC 지정
+  

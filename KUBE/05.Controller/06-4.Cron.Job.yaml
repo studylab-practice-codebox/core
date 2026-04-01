@@ -1,0 +1,24 @@
+apiVersion: batch/v1                                                  # API Version(batch/v1beta 아님)
+kind: CronJob
+metadata:
+  name: hello
+spec:
+  schedule: "*/1 * * * *"                                             # Cron Schedule 지정
+  startingDeadlineSeconds: 600                                        # 지정 시간에 실행되지 못한 상황에서 해당 필드 값(600s)으로 설정한 시간까지 지나면 크론잡은 실행하지 않음
+  concurrencyPolicy: Replace                                          # 크론잡의 동시성 관리
+                                                                      # Allow : 여러 개의 잡을 동시 실행
+                                                                      # Forbid : 이전 Job이 정상 실행 중이지 않은 상태에서 schedule에 따른 다음 시간이 도래 했을 때 새로운 Jub은 다음 schedule Time으로 연기하고 이전 Job이 실행 됐다면 schedule에 따라 정상 실행
+                                                                      # Replace : 이전 실행 Job이 실행 중인 상태에서 schedule에 따른 다음 시간이 도래 했을 때 이전 실행 Job을 종료하고 새로운 Job으로 실행
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:                                                   # 실행할 Container 지정
+          - name: hello                                                 # metadata.name과 동일
+            image: busybox:1.28                                         # 실행할 Container Image 지정(busybox : Linux 기반의 네트워크 명령 사용 시 주로 사용)
+            imagePullPolicy: IfNotPresent
+            command:                                                    # Container 실행 시 사용할 명령 지정
+            - /bin/sh
+            - -c
+            - date; echo Hello from the Kubernetes cluster; sleep 6000  # 시간, 텍스트 글자 출력 후 6,000s간 대기
+          restartPolicy: OnFailure                                      # Container 비정상 종료 시 자동 재시작 기능 활성화

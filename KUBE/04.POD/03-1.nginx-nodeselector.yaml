@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-nodeselector-pod
+spec:
+  containers:
+  - name: nginx-nodeselector-pod
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+  nodeSelector:
+    disktype : ssd # Label의 값이 ssd 인지 검사 후 동일하면 동작

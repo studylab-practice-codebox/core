@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata: # ClusterRole은 모든 namespace를 관할하기 때문에 namespace를 지정하지 않음
+  name: admin-aggregation # ClusterRole의 이름 지정
+aggregationRule:
+  clusterRoleSelectors:
+  - matchLabels:
+      kubernetes.io/bootstrapping: rbac-defaults # 기본 Labels 지정
+rules: [] # 값이 공란인 이유는 Labels에 맞는 규칙들을 자동으로 로드
+
+### rules에 대한 참고 사항 (URL 단위로 지정 시) ###
+# rules:
+# - nonResourceURLs: ["/healthcheck", "/metrics/*"]  # URL 설정(도메인/healthcheck), 메트릭(/metrics/* => /metric/cpu, /metric/memory 등)
+#   verbs: ["get", "post"]  # URL 요청 시에는 GET과 POST만 허용 (보안 권장 사항)

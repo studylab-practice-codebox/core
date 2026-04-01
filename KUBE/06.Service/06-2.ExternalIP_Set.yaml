@@ -1,0 +1,36 @@
+##### Deployment와 ExternalIP 동시 배포용 #####
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-hello
+  namespace: default
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:                     # labels 기준으로 필요한 파드 선택
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:                   # 파드와 서비스를 별개의 리소스로 생성하기 때문에 이를 구분
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginxdemos/hello
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-externalip
+spec:
+  selector:                   # labels 기준으로 필요한 파드 선택
+    app: nginx
+  ports:
+    - name: http              # 포트가 사용하는 프로토콜
+      protocol: TCP
+      port: 80                # 내부 포트(기본 서비스 포트)
+      targetPort: 9000        # 내부 포트(서비스 포트 번호가 여러개일 때)
+  externalIPs:                # Static NAT로 연동할 IP 주소 지정
+    - 8.8.8.8

@@ -1,0 +1,139 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: development
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: development
+  template:
+    metadata:
+      labels:
+        app: development
+    spec:
+      containers:
+      - name: development
+        image: nginxdemos/nginx-hello:plain-text
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: development-svc
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: development
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: staging
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: staging
+  template:
+    metadata:
+      labels:
+        app: staging
+    spec:
+      containers:
+      - name: staging
+        image: nginxdemos/nginx-hello:plain-text
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: staging-svc
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: staging
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: operation
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: operation
+  template:
+    metadata:
+      labels:
+        app: operation
+    spec:
+      containers:
+      - name: operation
+        image: nginxdemos/nginx-hello:plain-text
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: operation-svc
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: operation
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: application
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: application
+  template:
+    metadata:
+      labels:
+        app: application
+    spec:
+      containers:
+      - name: application
+        image: nginxdemos/nginx-hello:plain-text
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: application-svc
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: application

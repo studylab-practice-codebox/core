@@ -1,0 +1,41 @@
+# hostPath Type
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-hostpath
+spec:
+  containers:
+  - image: registry.k8s.io/test-webserver:latest
+    name: test-hostpath
+    volumeMounts: # Container 내부 Volume 선언
+    - mountPath: /test-pd # Mount 경로
+      name: test-hostpath-volume # Container 내부에서 사용할 Volume 이름
+  volumes: # Volume 설정
+  - name: test-hostpath-volume # Volume 이름
+    hostPath: # hostPath의 세부 설정
+      path: /tmp # 호스트의 디렉토리 위치
+      type: Directory # 선택 사항
+---
+# hostPath FileOrCreate Type  (파일의 상위 디렉토리를 생성하지 않음)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-fileorcreate 
+spec:
+  containers:
+  - name: test-fileorcreate
+    image: registry.k8s.io/test-webserver:latest
+    volumeMounts:
+    - mountPath: /var/local/aaa
+      name: mydir
+    - mountPath: /var/local/aaa/1.txt
+      name: myfile
+  volumes:
+  - name: mydir
+    hostPath:       # 파일 및 디렉토리가 생성되었는지 확인 (파일과 디렉토리는 서로 다른 경로에 생성할 수 있음)
+      path: /var/local/aaa
+      type: DirectoryOrCreate
+  - name: myfile
+    hostPath:
+      path: /var/local/aaa/1.txt
+      type: FileOrCreate

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentd-elasticsearch
+  namespace: kube-system
+  labels:
+    k8s-app: fluentd-logging
+spec:
+  selector:
+    matchLabels:
+      name: fluentd-elasticsearch
+  updateStrategy:
+    type: RollingUpdate # 배포가 이뤄지면 자동으로 업데이트 (수동 : OnDelete)
+    maxUnavailable: 1 # 한 번에 삭제하는 POD 수량(기본값 : 1개) 
+    minReadySeconds: 1 # 새로 실행하는 POD가 준비(Ready) 상태로 전환하는 최소 시간(기본값 : 0초) 
+  template:
+    metadata:
+      labels:
+        name: fluentd-elasticsearch
+    spec:
+      containers:
+      - name: fluentd-elasticsearch
+        image: fluent/fluentd-kubernetes-daemonset:elasticsearch
+        env:
+        - name: testenv
+          value: value
+        resources:
+          limits:
+            memory: 200Mi # 최대 MEM 사용량(200MB)
+          requests:
+            cpu: 100m # 기본 CPU 사용량
+            memory: 200Mi # 기본 MEM 사용량(200MB)

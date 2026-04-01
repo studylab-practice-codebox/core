@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: simple-fanout-example
+spec:
+  rules:
+  - host: foo.bar.com # foo.bar.com 접속 시
+    http:
+      paths:
+      - path: /foo # foo.bar.com/foo 접속 시
+        pathType: Prefix
+        backend: # foo.bar.com/foo 접속 시 service1:4200 으로 포워드
+          service:
+            name: service1
+            port:
+              number: 4200
+      - path: /bar # foo.bar.com/bar 접속 시
+        pathType: Prefix
+        backend: # foo.bar.com/bar 접속 시 service1:8080 으로 포워드
+          service:
+            name: service2
+            port:
+              number: 8080

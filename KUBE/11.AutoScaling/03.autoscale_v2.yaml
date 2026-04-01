@@ -1,0 +1,58 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php-apache
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: php-apache
+  minReplicas: 1  # 최소 Pod 수량
+  maxReplicas: 10 # 최대 Pod 수량
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50  # AutoScaler 동작 조건-1(예 : CPU사용률이 50% 초과 시 동작)
+  - type: Pods  # Pod 방식
+    pods:
+      metric:
+        name: packets-per-second
+      target:
+        type: AverageValue
+        averageValue: 1k  # AutoScaler 동작 조건-2(예 : 초당 Packet 처리 수량이 1,000개 이상일 때)
+  - type: object # 동일 namespace 내 object 방식
+    object:
+      metric:
+        name: requests-per-second
+      describedObject:
+        apiVersion: networking.k8s.io/v1
+        kind: Ingress
+        name: main-route
+      target:
+        type: Value
+        value: 10k  # AutoScaler 동작 조건-3(예 : Ingress 내부 Pod 에서 초당 Packet 처리 수량이 10,000개 이상일 때)
+status:
+  observedGeneration: 1
+  lastScaleTime: <some-time>
+  currentReplicas: 1
+  desiredReplicas: 1
+  currentMetrics:
+  - type: Resource
+    resource:
+      name: cpu
+    current:
+      averageUtilization: 0
+      averageValue: 0
+  - type: Object
+    object:
+      metric:
+        name: requests-per-second
+      describedObject:
+        apiVersion: networking.k8s.io/v1
+        kind: Ingress
+        name: main-route
+      current:
+        value: 10k

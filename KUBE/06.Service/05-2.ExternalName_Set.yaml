@@ -1,0 +1,29 @@
+##### Deployment와 ExternalName 동시 배포용 #####
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-hello
+  namespace: default
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:                     # labels 기준으로 필요한 파드 선택
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:                   # 파드와 서비스를 별개의 리소스로 생성하기 때문에 이를 구분
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginxdemos/hello
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-externalname
+spec:
+  type: ExternalName                # IP 부여 방식을 ExternalName로 지정
+  externalName: google.com          # DNS(CNAME Record) 지정

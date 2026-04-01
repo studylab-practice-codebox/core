@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-hostpatch  # PVC 이름
+spec:
+  accessModes:  # Volume의 읽기/쓰기 모드 지정
+  - ReadWriteOnce # 노드 1대에만 Volume의 읽기/쓰기 가능
+  volumeMode: Filesystem  # Volume을 FileSystem 형식으로 지정
+  resources:
+    requests:
+      storage: 1Gi  # PVC 용량 지정(PV의 전체 용량 보다 작아야 함)
+  storageClassName: manual  # Storage Class가 있는 PV는 해당 Storate Class에 맞는 PVC만 연결
+  

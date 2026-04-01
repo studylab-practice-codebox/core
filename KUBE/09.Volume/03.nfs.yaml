@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-example
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs-example
+  template:
+    metadata:
+      labels:
+        app: nfs-example
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        volumeMounts:
+           - mountPath: /nfs
+             name: nfs-vol
+      volumes:
+      - name: nfs-vol
+        nfs:
+          server: 192.168.255.211
+          path: /tmp/share
+          readOnly: true

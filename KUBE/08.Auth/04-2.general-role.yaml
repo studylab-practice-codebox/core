@@ -1,0 +1,21 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: dev-nginx  # 네임스페이스 지정
+  name: dev-role  # 롤의 이름 지정
+rules:  # 롤이 보유한 권한 규칙 지정
+- apiGroups: ["", "apps"] # 롤이 사용할 API 그룹 설정(값이 공란이면 설정 값을 지정하지 않고, "apps"는 Deployments를 사용하기 위함)
+  resources: ["pods", "Deployments"] # 어떤 자원에 접근할 수 있는지 명시(예 : pods, Deployments만 접근 가능)
+  resourceNames: [""] # 특정 Pod 조회 권한 설정(예 : 값이 공란이므로 속성 값을 지정하지 않음)
+  verbs: ["get", "list", "edit"] # 어떤 동작이 가능한지 명시
+
+##### rules.verbs 필드 값 정리 #####
+  # 1. create : 새로운 자원 생성
+  # 2. get : 개별 자원 조회
+  # 3. list : 여러 자원 조회 → 없으면 API 및 Resource를 호출하지 못함
+  # 4. update : 기존 자원 내용 업데이트
+  # 5. patch : 기존 자원 중 일부 내용 변경
+  # 6. delete : 개별 자원 삭제
+  # 7. deletecoliection : 여러 개의 자원 삭제
+  # 8. watch : 개별 자원 혹은 자원 모음 확인
+  # 9. edit : 개별 자원 수정

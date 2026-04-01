@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-node-master
+spec:
+  containers:
+  - name: nginx-node-master
+    image: nginx
+  nodeName: 211-k8s-master # node 이름 지정. node 이름이 명확하지 않으면 생성하지 않음.
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-node-worker1
+spec:
+  containers:
+  - name: nginx-node-worker1
+    image: nginx
+  nodeName: 212-k8s-worker1 # node 이름 지정. node 이름이 명확하지 않으면 생성하지 않음.
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-node-worker2
+spec:
+  containers:
+  - name: nginx-node-worker2
+    image: nginx
+  nodeName: 213-k8s-worker2 # node 이름 지정. node 이름이 명확하지 않으면 생성하지 않음.

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: default
+  name: dns-example
+spec:
+  containers:
+  - name: test
+    image: nginx
+  dnsPolicy: "None" # 해당 영역은 "None" 대신에 "ClusterFirst"(searches: 업스트림)로 지정 가능
+  dnsConfig:
+    nameservers: # 사용할 Caching DNS 서버 정보 (3개 까지 가능)
+    - 168.126.63.1
+    - 168.126.63.2
+    - 8.8.8.8
+    searches: # DNS 검색 시 사용할 기본 도메인 주소 (6개 까지 가능)
+    - default.svc.cluster.local # 도메인 주소가 a.default.svc.cluster.local인 경우 a.만 입력하면 default.svc.cluster.local을 포함하여 검색
+    - nginx.vm # 도메인 주소가 web.nginx.vm인 경우 web.만 입력하면 nginx.vm을 포함하여 검색
+    - example.com # 도메인 주소가 www.example.com인 경우 www.만 입력하면 example.com을 포함하여 검색
+    options: # DNS 관련 옵션 (name : 필수, value : 선택)
+    - name: ndots
+      value: "2"
+    - name: edns0

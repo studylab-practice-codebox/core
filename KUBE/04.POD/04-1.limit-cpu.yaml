@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: limit-cpu-1
+spec:
+  containers:
+  - name: limit-cpu-1
+    image: vish/stress
+    resources:
+      limits:       # 최대 CPU 수량(1 Core)
+        cpu: "1"
+      requests:     # 기본 CPU 수량(0.5 Core)
+        cpu: "0.5"

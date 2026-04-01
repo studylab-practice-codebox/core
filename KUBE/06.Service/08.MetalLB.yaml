@@ -1,0 +1,20 @@
+# Loadbalancer가 사용할 IP 주소 대역 환경 설정
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+     name: first-pool
+     namespace: metallb-system
+spec:
+ #k8s가 사용하는 네트워크 대역 중 서비스에 줄 IP 대역
+    addresses:
+    - 192.168.255.80-192.168.255.90
+---
+# IP가 L2 계층에서 ARP protocol에 반응할 수 있는 환경 설정
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+     name: default
+     namespace: metallb-system
+spec:
+    ipAddressPools:
+    - first-pool

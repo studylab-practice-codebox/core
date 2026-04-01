@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    test: liveness
+  name: liveness-exec
+spec:
+  containers:
+  - name: liveness
+    image: registry.k8s.io/busybox
+    args: # Continer 에서 실행하는 명령 (/tmp/healthy 생성 후 30초간 대기 → /tmp/healthy 삭제 후 600초간 대기)
+    - /bin/sh
+    - -c
+    - touch /tmp/healthy; sleep 30; rm -f /tmp/healthy; sleep 600 # cat /tmp/healthy 수행 시 처음 30초 동안은 파일이 있으나 그 후 30초 후에는 실패 코드 반환
+    livenessProbe: # HealthCheck 설정
+      exec:
+        command: # HealthCheck 방법
+        - cat
+        - /tmp/healthy
+      initialDelaySeconds: 5 # 첫 번째 Probe 수행 전 5초간 대기
+      periodSeconds: 5 # initialDelaySeconds 시간이 지나면 5초마다 Probe를 수행하고 명령이 성공하면 '0'으로 값을 반환

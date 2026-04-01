@@ -1,0 +1,12 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php-apache
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: php-apache
+  minReplicas: 1  # 최소 Pod 수량
+  maxReplicas: 10 # 최대 Pod 수량
+  targetCPUUtilizationPercentage: 50  # AutoScaler 동작 조건(예 : 50% 초과 시 동작)

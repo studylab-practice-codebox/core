@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: name-virtual-host-ingress-no-third-host
+spec:
+  rules:
+  - host: first.bar.com # first.bar.com 접속 시
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/" # 경로는 first.bar.com/
+        backend: # first.bar.com/ 접속 시 service1:80 으로 포워드
+          service:
+            name: service1
+            port:
+              number: 80
+  - host: second.bar.com # second.bar.com 접속 시
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/" # 경로는 second.bar.com/
+        backend: # second.bar.com/ 접속 시 service2:80 으로 포워드
+          service:
+            name: service2
+            port:
+              number: 80
+  - http: # first.bar.com, second.bar.com이 아닌 주소로 접속 시
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend: # first.bar.com/, second.bar.com/이 아닌 주소로 접속 시 service3:80 으로 포워드
+          service:
+            name: service3
+            port:
+              number: 80

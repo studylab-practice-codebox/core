@@ -1,0 +1,65 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: development-ingressroute
+  namespace: default
+spec:
+  entryPoints:
+  - web
+  routes:
+  - match: Host(`development.k8s.vm`)
+    kind: Rule
+    services:
+    - name: development-svc
+      port: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: staging-ingressroutetls
+  namespace: default
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - match: Host(`staging.k8s.vm`)
+    kind: Rule
+    services:
+    - name: staging-svc
+      port: 80
+  tls:
+    certResolver: myresolver
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: operation-ingressroutetls
+  namespace: default
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - match: Host(`www.k8s.vm`) && PathPrefix(`/operation`)
+    kind: Rule
+    services:
+    - name: operation-svc
+      port: 80
+  tls:
+    certResolver: myresolver
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: application-ingressroutetls
+  namespace: default
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - match: Host(`www.k8s.vm`) && PathPrefix(`/application`)
+    kind: Rule
+    services:
+    - name: application-svc
+      port: 80
+  tls:
+    certResolver: myresolver

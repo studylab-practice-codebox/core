@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding  # 방식 지정
+metadata:
+  name: read-secrets-global
+subjects:
+- kind: ServiceAccount # ServiceAccount 방식 지정
+  name: dev01  # 04-4.role-binding.yaml 파일에서 생성한 계정 이름 지정
+  namespace: dev-nginx # 04-4.role-binding.yaml 파일에서 생성한 namespace 지정
+  apiGroup: "" # API Version 지정
+roleRef:
+  kind: ClusterRole
+  name: admin-aggregation # 04-5.cluster-role-aggr.yaml 파일에서 생성한 ClusterRole 이름 지정
+  apiGroup: rbac.authorization.k8s.io

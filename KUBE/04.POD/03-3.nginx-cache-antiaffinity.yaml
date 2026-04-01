@@ -1,0 +1,74 @@
+# 1. namespace 생성 : 기존 실습 내용과 구분하기 위함
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nginx-cache # 네임스페이스 생성
+---
+# 2. Cache Server (redis) 생성
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-cache
+  namespace: nginx-cache  # 네임스페이스 지정
+spec:
+  selector:
+    matchLabels:
+      app: store
+  replicas: 3 # Replicas Pod = 3개
+  template:
+    metadata:
+      labels:
+        app: store  # Replica Label : app=store
+    spec:
+      affinity:
+        podAntiAffinity:  # 파드 어피니티 설정
+          requiredDuringSchedulingIgnoredDuringExecution: # Pod 스케쥴링 시 필수 조건(예 : 특정 레이블에만 Pod 할당)인 경우
+          - labelSelector:  # Label 선택
+              matchExpressions: # Label, key, values 지정
+              - key: app  # key 값 = app
+                operator: In  # Label의 key와 values의 비교 조건(key=values에 해당하는 Pod가 속한 node는 피함)
+                values:
+                - store # 값이 store 인지 검사(조건 : spec.template.metadata.labels.app = store)
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: redis-server
+        image: redis:3.2-alpine
+---
+# 3. WEB Server (nginx) 지정
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-server
+  namespace: nginx-cache  # 네임스페이스 지정
+spec:
+  selector:
+    matchLabels:
+      app: web-store
+  replicas: 3 # Replicas Pod = 3개
+  template:
+    metadata:
+      labels:
+        app: web-store
+    spec:
+      affinity:
+        podAntiAffinity:  # 파드 어피니티 설정1 (app=web-store)
+          requiredDuringSchedulingIgnoredDuringExecution: # Pod 스케쥴링 시 필수 조건(예 : 특정 레이블에만 Pod 할당)인 경우
+          - labelSelector:  # Label 선택
+              matchExpressions: # Label, key, values 지정
+              - key: app  # key 값 = app
+                operator: In  # Label의 key와 values의 비교 조건
+                values:
+                - web-store  # 값이 web-store 인지 검사(조건 : operator)
+            topologyKey: "kubernetes.io/hostname"
+        podAffinity:  # 파드 어피니티 설정2 (app=store)
+          requiredDuringSchedulingIgnoredDuringExecution: # Pod 스케쥴링 시 필수 조건(예 : 특정 레이블에만 Pod 할당)인 경우
+          - labelSelector:  # Label 선택
+              matchExpressions: # Label, key, values 지정
+              - key: app  # key 값 = app
+                operator: In  # Label의 key와 values의 비교 조건
+                values:
+                - store # 값이 store 인지 검사(조건 : operator)
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: web-app # 값이 web-app 인지 검사(조건 : operator)
+        image: nginx:1.16-alpine

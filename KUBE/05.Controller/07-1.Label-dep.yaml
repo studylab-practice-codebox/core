@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: 07-1.Label-dep # yaml 파일명과 일치시키도록 작업
+  labels:
+    app: nginx
+  namespace: nginx-label # 실습 편의를 위해 NS 구분
+spec:
+  replicas: 1 # 동시에 실행할 POD 수량
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels: # 해당 POD의 구분자 설정
+        app: nginx
+        environment: develop
+        release: beta
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80 # POD가 실행할 서비스 포트 번호

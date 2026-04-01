@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0002  # PV 이름
+spec:
+  capacity:
+    storage: 2Gi  # PV 용량 지정(이진법 접두어 방식)
+  volumeMode: Filesystem  # Volume을 FileSystem 형식으로 지정
+  accessModes:  # Volume의 읽기/쓰기 모드 지정
+    - ReadWriteOnce # 노드 1대에만 Volume의 읽기/쓰기 가능
+  persistentVolumeReclaimPolicy: Delete # PV 해제 시 초기화 옵션
+  storageClassName: slow  # Storage Class가 있는 PV는 해당 Storate Class에 맞는 PVC만 연결
+  mountOptions: # 추가 옵션 사용이 가능한 Volume Mount Option (예시 : NFS v4.1)
+    - hard
+    - nfsvers=4.1
+  nfs: # PV의 Volume Plugin (예시 : nfs)
+    path: /tmp/share  # Mount를 수행할 NFS Server 경로
+    server: 192.168.255.211  # NFS Server 주소
+

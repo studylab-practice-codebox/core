@@ -1,0 +1,35 @@
+##### Deployment와 ClusterIP(Headless) 동시 배포용 #####
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-hello
+  namespace: default
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:                     # labels 기준으로 필요한 파드 선택
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:                   # 파드와 서비스를 별개의 리소스로 생성하기 때문에 이를 구분
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginxdemos/hello
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-headless
+spec:
+  type: ClusterIP               # IP 부여 방식을 ClusterIP로 지정
+  clusterIP: None               # Headless 방식 적용(ClusterIP를 지정하지 않음)
+  selector:
+    app: nginx                  # Deployment의 서비스 이름인 nginx와 연동
+  ports:
+  - protocol: TCP               # 포트가 사용하는 프로토콜
+    port: 80                    # 내부 포트(기본 서비스 포트)
+    targetPort: 80              # 내부 포트(서비스 포트 번호가 여러개일 때)

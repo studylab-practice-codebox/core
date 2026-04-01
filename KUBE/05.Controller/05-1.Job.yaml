@@ -1,0 +1,14 @@
+# Perl 기반 원주율 계산기
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pi
+spec:
+  template:
+    spec:
+      containers:
+      - name: pi
+        image: perl
+        command: ["perl", "-Mbignum=bpi", "-wle", "print bpi(2000)"]
+      restartPolicy: Never      # Never : POD는 항상 성공으로 끝나도록 설정(OnFailure : 비정상 종료 시 컨테이너 자동 재시작)
+  backoffLimit: 4               # Job 실행 실패 시 자동 재시작 횟수 지정(Backoff)하는 것으로 기본 값(Default)은 6
